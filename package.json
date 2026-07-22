@@ -1,0 +1,13 @@
+{
+  "name": "gestor-gastos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Gestor simple de gastos + PWA para el celular",
+  "scripts": {
+    "generar": "node generar_plantilla.js",
+    "pwa": "npx --yes serve pwa -p 4173"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}

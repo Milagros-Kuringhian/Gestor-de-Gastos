@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0f5a50" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Mi Plata" />
+    <meta
+      name="description"
+      content="Anotá cobros y gastos en 2 toques. Simple y en el celular."
+    />
+    <title>Mi Plata</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="app">
+      <header class="top">
+        <div>
+          <p class="eyebrow">Hoy</p>
+          <h1 id="fecha-hoy">—</h1>
+        </div>
+        <button type="button" class="ghost-btn" id="btn-ajustes" aria-label="Ajustes">
+          Ajustes
+        </button>
+      </header>
+
+      <section class="balance-card" aria-live="polite">
+        <p class="balance-label">Plata disponible</p>
+        <p class="balance-value" id="plata-disponible">$0</p>
+        <div class="balance-row">
+          <div>
+            <span>Cobrado</span>
+            <strong id="total-cobrado">$0</strong>
+          </div>
+          <div>
+            <span>Gastado</span>
+            <strong id="total-gastado">$0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="anotar">
+        <h2>Anotar</h2>
+        <div class="cat-grid" id="cat-grid"></div>
+      </section>
+
+      <section class="historial">
+        <div class="historial-head">
+          <h2>Últimos movimientos</h2>
+          <button type="button" class="ghost-btn" id="btn-exportar">
+            Exportar CSV
+          </button>
+        </div>
+        <ul id="lista-movimientos" class="lista"></ul>
+        <p class="empty" id="empty-state">Todavía no anotaste nada.</p>
+      </section>
+
+      <p class="install-hint" id="install-hint" hidden>
+        Tip Android: en Chrome tocá el menú ⋮ → <strong>Instalar app</strong>
+        o <strong>Agregar a la pantalla principal</strong>.
+      </p>
+    </div>
+
+    <!-- Modal monto -->
+    <div class="modal" id="modal-monto" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+        <h3 id="modal-titulo">Monto</h3>
+        <p class="modal-sub" id="modal-sub"></p>
+        <label class="sr-only" for="input-monto">Monto en pesos</label>
+        <div class="monto-wrap">
+          <span>$</span>
+          <input
+            id="input-monto"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="1"
+            placeholder="0"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" data-close>Cancelar</button>
+          <button type="button" class="btn-primary" id="btn-guardar">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal ajustes -->
+    <div class="modal" id="modal-ajustes" hidden>
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="ajustes-titulo">
+        <h3 id="ajustes-titulo">Ajustes</h3>
+        <label for="input-saldo">Saldo inicial</label>
+        <div class="monto-wrap">
+          <span>$</span>
+          <input
+            id="input-saldo"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="1"
+            placeholder="0"
+          />
+        </div>
+        <p class="hint">
+          Es la plata que ya tenías antes de empezar a anotar. Los cobros y
+          gastos se suman y restan sobre esto.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" data-close>Cerrar</button>
+          <button type="button" class="btn-primary" id="btn-guardar-saldo">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
