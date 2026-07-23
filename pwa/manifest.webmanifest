@@ -1,6 +1,6 @@
 {
-  "name": "Mi Plata",
-  "short_name": "Mi Plata",
+  "name": "Mis gastos",
+  "short_name": "Mis gastos",
   "description": "Anotá cobros y gastos en 2 toques",
   "start_url": "./index.html",
   "scope": "./",

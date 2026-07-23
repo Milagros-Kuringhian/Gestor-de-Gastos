@@ -1,4 +1,4 @@
-# Mi Plata — gestor de gastos
+# Mis gastos — gestor de gastos
 
 Dos formas de usarlo:
 
@@ -35,7 +35,7 @@ npx vercel pwa --yes
 
 1. Abrí esa URL en **Chrome** del celular
 2. Menú ⋮ → **Instalar app** o **Agregar a la pantalla principal**
-3. Queda el ícono **Mi Plata**
+3. Queda el ícono **Mis gastos**
 
 ### Cómo usarla
 
