@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Mis gastos" />
     <meta
       name="description"
-      content="Anotá cobros y gastos en 2 toques. Simple y en el celular."
+      content="Anotá cobros, gastos y ahorros en 2 toques. Simple y en el celular."
     />
     <title>Mis gastos</title>
     <link rel="manifest" href="manifest.webmanifest?v=mis-gastos" />
@@ -50,6 +50,10 @@
           <div>
             <span>Gastado</span>
             <strong id="total-gastado">$0</strong>
+          </div>
+          <div>
+            <span>Ahorrado</span>
+            <strong id="total-ahorrado">$0</strong>
           </div>
         </div>
       </section>
@@ -107,7 +111,7 @@
       <div class="modal-backdrop" data-close></div>
       <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="ajustes-titulo">
         <h3 id="ajustes-titulo">Ajustes</h3>
-        <label for="input-saldo">Saldo inicial</label>
+        <label for="input-saldo">Saldo inicial (disponible)</label>
         <div class="monto-wrap">
           <span>$</span>
           <input
@@ -119,9 +123,21 @@
             placeholder="0"
           />
         </div>
+        <label for="input-saldo-ahorro">Saldo inicial (ahorro)</label>
+        <div class="monto-wrap">
+          <span>$</span>
+          <input
+            id="input-saldo-ahorro"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="1"
+            placeholder="0"
+          />
+        </div>
         <p class="hint">
-          Es la plata que ya tenías antes de empezar a anotar. Los cobros y
-          gastos se suman y restan sobre esto.
+          Disponible: plata líquida para gastar. Ahorro: lo que ya tenías
+          guardado. Pasar a ahorro baja el disponible pero no cuenta como gasto.
         </p>
         <div class="modal-actions">
           <button type="button" class="btn-secondary" data-close>Cerrar</button>

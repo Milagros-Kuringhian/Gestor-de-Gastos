@@ -2,6 +2,8 @@ const STORAGE_KEY = "mi-plata-v1";
 
 const CATEGORIAS = [
   { id: "cobre", nombre: "Cobré", tipo: "ingreso", tag: "Ingreso" },
+  { id: "ahorre", nombre: "Ahorré", tipo: "aporte", tag: "Ahorro" },
+  { id: "retire", nombre: "Retiré", tipo: "retiro", tag: "Ahorro" },
   { id: "padel", nombre: "Pádel", tipo: "gasto", tag: "Gasto" },
   { id: "facultad", nombre: "Facultad", tipo: "gasto", tag: "Gasto" },
   { id: "transporte", nombre: "Transporte", tipo: "gasto", tag: "Gasto" },
@@ -16,6 +18,7 @@ const els = {
   plata: $("#plata-disponible"),
   cobrado: $("#total-cobrado"),
   gastado: $("#total-gastado"),
+  ahorrado: $("#total-ahorrado"),
   grid: $("#cat-grid"),
   lista: $("#lista-movimientos"),
   empty: $("#empty-state"),
@@ -26,6 +29,7 @@ const els = {
   btnGuardar: $("#btn-guardar"),
   modalAjustes: $("#modal-ajustes"),
   inputSaldo: $("#input-saldo"),
+  inputSaldoAhorro: $("#input-saldo-ahorro"),
   btnAjustes: $("#btn-ajustes"),
   btnGuardarSaldo: $("#btn-guardar-saldo"),
   btnExportar: $("#btn-exportar"),
@@ -39,6 +43,7 @@ let categoriaActiva = null;
 function defaultState() {
   return {
     saldoInicial: 0,
+    saldoAhorroInicial: 0,
     movimientos: [],
   };
 }
@@ -50,6 +55,7 @@ function loadState() {
     const parsed = JSON.parse(raw);
     return {
       saldoInicial: Number(parsed.saldoInicial) || 0,
+      saldoAhorroInicial: Number(parsed.saldoAhorroInicial) || 0,
       movimientos: Array.isArray(parsed.movimientos) ? parsed.movimientos : [],
     };
   } catch {
@@ -88,15 +94,82 @@ function hoyISO() {
 function totales() {
   let cobrado = 0;
   let gastado = 0;
+  let aportes = 0;
+  let retiros = 0;
+
   for (const mov of state.movimientos) {
-    if (mov.tipo === "ingreso") cobrado += mov.monto;
-    else gastado += mov.monto;
+    switch (mov.tipo) {
+      case "ingreso":
+        cobrado += mov.monto;
+        break;
+      case "gasto":
+        gastado += mov.monto;
+        break;
+      case "aporte":
+        aportes += mov.monto;
+        break;
+      case "retiro":
+        retiros += mov.monto;
+        break;
+      default:
+        // Movimientos viejos sin tipo conocido: tratar como gasto.
+        gastado += mov.monto;
+        break;
+    }
   }
+
   return {
     cobrado,
     gastado,
-    disponible: state.saldoInicial + cobrado - gastado,
+    aportes,
+    retiros,
+    ahorrado: state.saldoAhorroInicial + aportes - retiros,
+    disponible:
+      state.saldoInicial + cobrado - gastado - aportes + retiros,
   };
+}
+
+function textoModalPorTipo(tipo) {
+  switch (tipo) {
+    case "ingreso":
+      return "¿Cuánto cobraste hoy?";
+    case "gasto":
+      return "¿Cuánto gastaste?";
+    case "aporte":
+      return "¿Cuánto pasás a ahorro?";
+    case "retiro":
+      return "¿Cuánto sacás del ahorro?";
+    default:
+      return "¿Cuánto?";
+  }
+}
+
+function toastPorTipo(tipo) {
+  switch (tipo) {
+    case "ingreso":
+      return "Cobro anotado";
+    case "gasto":
+      return "Gasto anotado";
+    case "aporte":
+      return "Ahorro anotado";
+    case "retiro":
+      return "Retiro anotado";
+    default:
+      return "Anotado";
+  }
+}
+
+function signoPorTipo(tipo) {
+  switch (tipo) {
+    case "ingreso":
+    case "retiro":
+      return "+";
+    case "gasto":
+    case "aporte":
+      return "−";
+    default:
+      return "−";
+  }
 }
 
 function renderCategorias() {
@@ -115,6 +188,7 @@ function render() {
   els.plata.textContent = formatARS(t.disponible);
   els.cobrado.textContent = formatARS(t.cobrado);
   els.gastado.textContent = formatARS(t.gastado);
+  els.ahorrado.textContent = formatARS(t.ahorrado);
 
   const ordenados = [...state.movimientos].sort((a, b) =>
     a.fechaISO < b.fechaISO ? 1 : a.fechaISO > b.fechaISO ? -1 : b.createdAt - a.createdAt
@@ -123,7 +197,7 @@ function render() {
   els.lista.innerHTML = ordenados
     .slice(0, 40)
     .map((mov) => {
-      const signo = mov.tipo === "ingreso" ? "+" : "−";
+      const signo = signoPorTipo(mov.tipo);
       return `
       <li>
         <div class="meta">
@@ -153,10 +227,7 @@ function formatFechaCorta(iso) {
 function abrirModalMonto(cat) {
   categoriaActiva = cat;
   els.modalTitulo.textContent = cat.nombre;
-  els.modalSub.textContent =
-    cat.tipo === "ingreso"
-      ? "¿Cuánto cobraste hoy?"
-      : "¿Cuánto gastaste?";
+  els.modalSub.textContent = textoModalPorTipo(cat.tipo);
   els.inputMonto.value = "";
   els.modalMonto.hidden = false;
   setTimeout(() => els.inputMonto.focus(), 50);
@@ -192,7 +263,7 @@ function guardarMovimiento() {
   saveState();
   cerrarModales();
   render();
-  showToast(tipo === "ingreso" ? "Cobro anotado" : "Gasto anotado");
+  showToast(toastPorTipo(tipo));
 }
 
 function borrarMovimiento(id) {
@@ -258,21 +329,30 @@ function wireEvents() {
 
   els.btnAjustes.addEventListener("click", () => {
     els.inputSaldo.value = state.saldoInicial || "";
+    els.inputSaldoAhorro.value = state.saldoAhorroInicial || "";
     els.modalAjustes.hidden = false;
     setTimeout(() => els.inputSaldo.focus(), 50);
   });
 
   els.btnGuardarSaldo.addEventListener("click", () => {
     const saldo = Number(String(els.inputSaldo.value).replace(",", "."));
+    const saldoAhorro = Number(
+      String(els.inputSaldoAhorro.value).replace(",", ".")
+    );
     if (!Number.isFinite(saldo) || saldo < 0) {
       showToast("Saldo inválido");
       return;
     }
+    if (!Number.isFinite(saldoAhorro) || saldoAhorro < 0) {
+      showToast("Ahorro inicial inválido");
+      return;
+    }
     state.saldoInicial = saldo;
+    state.saldoAhorroInicial = saldoAhorro;
     saveState();
     cerrarModales();
     render();
-    showToast("Saldo guardado");
+    showToast("Saldos guardados");
   });
 
   els.btnExportar.addEventListener("click", exportarCSV);
