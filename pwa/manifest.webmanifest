@@ -1,9 +1,10 @@
 {
+  "id": "/Gestor-de-Gastos/?app=mis-gastos",
   "name": "Mis gastos",
   "short_name": "Mis gastos",
   "description": "Anotá cobros y gastos en 2 toques",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/Gestor-de-Gastos/?source=pwa",
+  "scope": "/Gestor-de-Gastos/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#e8efe9",

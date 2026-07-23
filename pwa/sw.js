@@ -1,10 +1,9 @@
-const CACHE = "mis-gastos-v1";
+const CACHE = "mis-gastos-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];
@@ -26,6 +25,23 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
+
+  const url = new URL(req.url);
+  const isManifest = url.pathname.endsWith("manifest.webmanifest");
+
+  // El nombre de la app no debe quedar atrapado en caché vieja.
+  if (isManifest) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((cache) => cache.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(req).then((cached) => {
