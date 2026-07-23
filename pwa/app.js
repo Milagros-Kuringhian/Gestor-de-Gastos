@@ -2,13 +2,13 @@ const STORAGE_KEY = "mi-plata-v1";
 
 const CATEGORIAS = [
   { id: "cobre", nombre: "Cobré", tipo: "ingreso", tag: "Ingreso" },
-  { id: "ahorre", nombre: "Ahorré", tipo: "aporte", tag: "Ahorro" },
-  { id: "retire", nombre: "Retiré", tipo: "retiro", tag: "Ahorro" },
   { id: "padel", nombre: "Pádel", tipo: "gasto", tag: "Gasto" },
   { id: "facultad", nombre: "Facultad", tipo: "gasto", tag: "Gasto" },
   { id: "transporte", nombre: "Transporte", tipo: "gasto", tag: "Gasto" },
   { id: "hormiga", nombre: "Gastos hormiga", tipo: "gasto", tag: "Gasto" },
   { id: "otros", nombre: "Otros", tipo: "gasto", tag: "Gasto" },
+  { id: "ahorre", nombre: "Ahorré", tipo: "aporte", tag: "Ahorro" },
+  { id: "retire", nombre: "Retiré", tipo: "retiro", tag: "Ahorro" },
 ];
 
 const $ = (sel) => document.querySelector(sel);
